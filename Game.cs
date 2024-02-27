@@ -4,20 +4,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Mysqlx.Datatypes.Scalar.Types;
 
 namespace ProjectGUI
 {
     internal class Game
     {
-        private string key;
-        private string title;
-        private Platform platform;
-        private ArrayList genres = new ArrayList();
-        private Company company;
-        private string description;
+        public string key { get; set; }
+        public string title { get; set; }
+        public Platform platform { get; set; }
+        public List<Genre> genres { get;  set; }
+        public Company company { get; set; }
+        public string description { get; set; }
 
         public Game() { }
-        public Game(string key, string title, Platform plat, ArrayList genres, Company comp, string desc) 
+        public Game(string key, string title, Platform plat, List<Genre> genres, Company comp, string desc) 
         {
             this.key = key;
             this.title = title;
@@ -27,9 +28,26 @@ namespace ProjectGUI
             this.description = desc;
         }
 
+        public string GetGenres()
+        {
+            string genres = "";
+            foreach (var item in this.genres)
+            {
+                genres += item.ToString() + ", ";
+            }
+            genres = genres.Remove(genres.Length - 2);
+            return genres;
+        }
+
         public override string ToString()
         {
-            return key + ": " + title + ";";
+            string genres = "";
+            foreach (var item in this.genres)
+            {
+                genres += item.ToString() + ", ";
+            }
+            genres = genres.Remove(genres.Length - 2);
+            return key + ": " + title + ": " + genres + ";";
         }
     }
 }

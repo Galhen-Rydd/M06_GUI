@@ -17,5 +17,13 @@ namespace ProjectGUI
             this.id = id;
             this.name = name;
         }
+
+        public int getId() { return id; }
+        public string getName() { return name; }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }

@@ -14,7 +14,7 @@ namespace ProjectGUI
 {
     public partial class Form1 : Form
     {
-        private ArrayList ListOfGames = new ArrayList();
+        private List<Game> ListOfGames = new List<Game>();
         private Dictionary<int, Company> ListOfCompanies = new Dictionary<int, Company>();
         private Dictionary<int, Platform> ListOfPlatforms = new Dictionary<int, Platform>();
         public Form1()
@@ -26,9 +26,22 @@ namespace ProjectGUI
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            Genre g = (Genre)Enum.Parse(typeof(Genre), "RPG");
-            Console.WriteLine(g);
+            //Genre g = (Genre)Enum.Parse(typeof(Genre), "RPG");
+            //Console.WriteLine(g);
             LoadSQL();
+            dataGridView1.DataSource = ListOfGames;
+            dataGridView1.Columns.Add("Genre", "Genre");
+            dataGridView1.Columns["key"].Visible = false;
+            PopulateGenreColumn();
+        }
+
+        private void PopulateGenreColumn()
+        {
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                Game game = (Game)row.DataBoundItem; // Get the corresponding Game object
+                row.Cells["Genre"].Value = game.GetGenres(); // Populate the genre column
+            }
         }
 
         private void LoadSQL()
@@ -69,22 +82,36 @@ namespace ProjectGUI
                 // Get Games
                 cmd = new MySqlCommand("select * from games order by GameKey ASC", con);
                 reader = cmd.ExecuteReader();
-                ArrayList arrayGenres;
+                List<Genre> listGenres;
 
                 while(reader.Read() != false) {
-                    arrayGenres = new ArrayList();
+                    listGenres = new List<Genre>();
                     string[] genres = reader.GetString(3).Split(';');
                     foreach(string s in genres)
                     {
+                        //Console.WriteLine(s);
                         try
                         {
-                            Genre g = (Genre)Enum.Parse(typeof(Genre), "RPG");
-                            arrayGenres.Add(g);
+                            if(s == "")
+                            {
+                                continue;
+                            }
+                            string genreString = s.Trim();
+                            Genre g = (Genre)Enum.Parse(typeof(Genre), genreString);
+                            //Console.WriteLine(g.ToString());
+                            listGenres.Add(g);
                         }
-                        catch (Exception ex) { Console.WriteLine("Unrecognized Genre..."); }
+                        catch (Exception ex) {
+                            Console.WriteLine(s);
+                            Console.WriteLine("Unrecognized Genre..."); 
+                        }
                     }
-                    ListOfGames.Add(new Game(reader.GetString(0), reader.GetString(1), ListOfPlatforms[reader.GetInt32(2)], 
-                        arrayGenres, ListOfCompanies[reader.GetInt32(5)], reader.GetString(4)));
+                    ListOfGames.Add(new Game(reader.GetString(0), reader.GetString(1), ListOfPlatforms[reader.GetInt32(2)],
+                        listGenres, ListOfCompanies[reader.GetInt32(5)], reader.GetString(4)));
+                    foreach (var s in listGenres)
+                    {
+                        Console.WriteLine(s.ToString());
+                    }
                 }
                 
                 reader.Close();

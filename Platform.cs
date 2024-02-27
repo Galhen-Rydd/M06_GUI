@@ -19,5 +19,13 @@ namespace ProjectGUI
             this.name = name;
             this.brandId = brandId;
         }
+
+        public int getId() { return id; }
+        public string getName() { return  name; }
+
+        public override string ToString()
+        {
+            return name;
+        }
     }
 }
