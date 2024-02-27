@@ -8,8 +8,8 @@ namespace ProjectGUI
 {
     internal class Company
     {
-        int id;
-        string name;
+        public int id { get; set; }
+        public string name { get; set; }
 
         public Company() { }
         public Company(int id, string name) 

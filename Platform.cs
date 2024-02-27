@@ -8,9 +8,9 @@ namespace ProjectGUI
 {
     internal class Platform
     {
-        private int id;
-        private string name;
-        private int brandId;
+        public int id { get; set; }
+        public string name { get; set; }
+        public int brandId { get; set; }
 
         public Platform() { }
         public Platform(int id, string name, int brandId) 
