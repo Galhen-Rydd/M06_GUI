@@ -232,5 +232,41 @@ namespace ProjectGUI
                 con.Close();
             }
         }
+
+        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = checkedListBox1.SelectedIndex;
+            int count = checkedListBox1.Items.Count;
+            for(int i = 0; i < count; i++)
+            {
+                if(index != i)
+                {
+                    checkedListBox1.SetItemCheckState(i, CheckState.Unchecked);
+                }
+            }
+        }
+
+        private void checkedListBox2_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            int index = checkedListBox2.SelectedIndex;
+            int count = checkedListBox2.Items.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (index != i)
+                {
+                    checkedListBox2.SetItemCheckState(i, CheckState.Unchecked);
+                }
+            }
+        }
     }
 }
