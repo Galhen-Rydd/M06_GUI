@@ -19,6 +19,7 @@ namespace ProjectGUI
         private List<Company> companies = new List<Company>();
         private Dictionary<int, Company> ListOfCompanies = new Dictionary<int, Company>();
         private Dictionary<int, Platform> ListOfPlatforms = new Dictionary<int, Platform>();
+        private List<User> users = new List<User>();
         public Form1()
         {
             InitializeComponent();
@@ -34,6 +35,8 @@ namespace ProjectGUI
             dataGridView1.DataSource = ListOfGames;
             dataGridView1.Columns.Add("Genre", "Genre");
             //dataGridView1.Columns["key"].Visible = false;
+            btnSendData.Enabled = false;
+            btnLogOut.Enabled = false;
             PopulateGenreColumn();
         }
 
@@ -59,9 +62,22 @@ namespace ProjectGUI
                 //MessageBox.Show(Convert.ToString(con.State));
                 con.Open();
                 //MessageBox.Show(Convert.ToString(con.State));
+                MySqlCommand cmd;
+                MySqlDataReader reader;
+
+                // Get Users
+                cmd = new MySqlCommand("select * from user order by ID ASC", con);
+                reader = cmd.ExecuteReader();
+                while (reader.Read() != false)
+                {
+                    users.Add(new User(reader.GetString(1), reader.GetString(2)));
+                }
+                reader.Close();
+                cmd.Dispose();
+                
                 // Get Companies
-                MySqlCommand cmd = new MySqlCommand("select * from company order by ID ASC", con);
-                MySqlDataReader reader = cmd.ExecuteReader();
+                cmd = new MySqlCommand("select * from company order by ID ASC", con);
+                reader = cmd.ExecuteReader();
                 while (reader.Read() != false)
                 {
                     ListOfCompanies.Add(reader.GetInt32(0), new Company(reader.GetInt32(0), reader.GetString(1)));
@@ -82,7 +98,7 @@ namespace ProjectGUI
                 cmd.Dispose();
 
                 // Get Games
-                cmd = new MySqlCommand("select * from games order by GameKey ASC", con);
+                cmd = new MySqlCommand("select * from game order by GameKey ASC", con);
                 reader = cmd.ExecuteReader();
                 List<Genre> listGenres;
 
@@ -138,7 +154,7 @@ namespace ProjectGUI
             {
                 con.Open();
                 ListOfGames = new List<Game>();
-                MySqlCommand cmd = new MySqlCommand("select * from games order by GameKey ASC", con);
+                MySqlCommand cmd = new MySqlCommand("select * from game order by GameKey ASC", con);
                 MySqlDataReader reader = cmd.ExecuteReader();
                 List<Genre> listGenres;
 
@@ -267,6 +283,123 @@ namespace ProjectGUI
                     checkedListBox2.SetItemCheckState(i, CheckState.Unchecked);
                 }
             }
+        }
+
+        private void btnSendData_Click(object sender, EventArgs e)
+        {
+            string mysqlquery = "";
+            string table;
+            string action;
+            
+            switch (checkedListBox1.SelectedIndex)
+            {
+                case 0:
+                    table = "game";
+                    break;
+                case 1:
+                    table = "platform";
+                    break;
+                case 2:
+                    table = "company";
+                    break;
+                default:
+                    return;
+            }
+            switch (checkedListBox2.SelectedIndex)
+            {
+                case 0:
+                    action = "insert into";
+                    mysqlquery = action + " " + table + " values ()";
+                    break;
+                case 1:
+                    action = "delete from";
+                    mysqlquery = action + " " + table + " where ";
+                    break;
+                case 2:
+                    action = "update";
+                    mysqlquery = action + " " + table + " set "; 
+                    break;
+                default:
+                    return;
+            }
+            using (MySqlConnection con = new MySqlConnection("server=localhost;" +
+                                                                "user=root;" +
+                                                                "database=dam_m06;" +
+                                                                "port=3306;" +
+                                                                "password=1234"))
+            {
+                con.Open();
+                MySqlCommand cmd = new MySqlCommand(mysqlquery, con);
+                try
+                {
+                    cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex) 
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("SQL error...");
+                }
+                con.Close();
+            }
+        }
+
+        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel6_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void btnLogIn_Click(object sender, EventArgs e)
+        {
+            User user = new User(tbxUser.Text, tbxPass.Text);
+            foreach(var u in users)
+            {
+                if (user.Equals(u))
+                {
+                    lblLog.Text = "Loged In!";
+                    btnSendData.Enabled = true;
+                    btnLogOut.Enabled = true;
+                    return;
+                }
+            }
+            lblLog.Text = "Invalid Credentials...";
+            btnSendData.Enabled = false;
+            btnLogOut.Enabled = false;
+            return;
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            if(btnSendData.Enabled == true)
+            {
+                lblLog.Text = "Loged Out, see you!";
+                btnSendData.Enabled = false;
+                btnLogOut.Enabled = false;
+            }
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnFilter_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
