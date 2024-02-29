@@ -31,23 +31,30 @@ namespace ProjectGUI
 
         public string GetGenresSQL()
         {
-            string genres = "";
-            foreach (var item in this.genres)
+            try
             {
-                genres += item.ToString() + ";";
-            }
-            return genres;
+                string gen = "";
+                foreach (var item in this.genres)
+                {
+                    gen += item.ToString() + ";";
+                }
+                return gen;
+            } catch { return ""; }
+
         }
 
         public string GetGenres()
         {
-            string genres = "";
-            foreach (var item in this.genres)
+            string gen = "";
+            try
             {
-                genres += item.ToString() + ", ";
-            }
-            genres = genres.Remove(genres.Length - 2);
-            return genres;
+                foreach (var item in this.genres)
+                {
+                    gen += item.ToString() + ", ";
+                }
+                gen = gen.Remove(gen.Length - 2);
+                return gen;
+            } catch { return ""; }
         }
 
         public bool Equals(Game other)
@@ -67,8 +74,9 @@ namespace ProjectGUI
                                                                 "password=1234"))
             {
                 con.Open();
-                MySqlCommand cmd = new MySqlCommand($"INSERT INTO game VALUES ( @GameKey, @Title, @PlatformID, @Genre, @Description, @BrandID )",
+                MySqlCommand cmd = new MySqlCommand($"INSERT INTO game ( GameKey, Title, Platform, Genre, Description, BrandID ) VALUES ( @GameKey, @Title, @PlatformID, @Genre, @Description, @BrandID )",
                     con);
+                Console.WriteLine(game.GetGenresSQL());
                 cmd.Parameters.AddWithValue("@GameKey", game.key);
                 cmd.Parameters.AddWithValue("@Title", game.title);
                 cmd.Parameters.AddWithValue("@PlatformID", game.platform.id);

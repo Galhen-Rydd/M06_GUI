@@ -183,14 +183,14 @@ namespace ProjectGUI
                 reader.Close();
                 cmd.Dispose();
                 con.Close();
-                dataGridView1.DataSource = ListOfGames;
-                if (!dataGridView1.Columns.Contains("Genre"))
-                {
-                    dataGridView1.Columns.Add("Genre", "Genre");
-                }
                 //dataGridView1.Columns["key"].Visible = false;
-                PopulateGenreColumn();
             }
+            dataGridView1.DataSource = ListOfGames;
+            if (!dataGridView1.Columns.Contains("Genre"))
+            {
+                dataGridView1.Columns.Add("Genre", "Genre");
+            }
+            PopulateGenreColumn();
             lblTable.Text = "Table: Games";
         }
 
@@ -421,7 +421,7 @@ namespace ProjectGUI
                     switch (checkedListBox1.SelectedIndex)
                     {
                         case 0:
-                            List<Genre> gen = new List<Genre>();
+                            List<Genre> gen = GetGenresFromInput();
                             try
                             {
                                 Game g1 = new Game(tbxKey.Text, tbxTitle.Text, ListOfPlatforms[Int32.Parse(tbxPlatformID.Text)],
