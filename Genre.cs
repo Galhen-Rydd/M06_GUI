@@ -18,6 +18,7 @@ namespace ProjectGUI
         Beat_Em_Up,
         Roguelike,
         Party_Game,
-        Creature_Collecting
+        Creature_Collecting,
+        Puzzle
     }
 }

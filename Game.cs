@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MySqlConnector;
 using System.Threading.Tasks;
 using static Mysqlx.Datatypes.Scalar.Types;
 
@@ -28,6 +29,16 @@ namespace ProjectGUI
             this.description = desc;
         }
 
+        public string GetGenresSQL()
+        {
+            string genres = "";
+            foreach (var item in this.genres)
+            {
+                genres += item.ToString() + ";";
+            }
+            return genres;
+        }
+
         public string GetGenres()
         {
             string genres = "";
@@ -37,6 +48,105 @@ namespace ProjectGUI
             }
             genres = genres.Remove(genres.Length - 2);
             return genres;
+        }
+
+        public bool Equals(Game other)
+        {
+            if(other == null) return false;
+            else if(other == this) return true;
+            else if(other.key == this.key) return true;
+            return false;
+        }
+
+        public static bool InsertGame(Game game)
+        {
+            using (MySqlConnection con = new MySqlConnection("server=localhost;" +
+                                                                "user=root;" +
+                                                                "database=dam_m06;" +
+                                                                "port=3306;" +
+                                                                "password=1234"))
+            {
+                con.Open();
+                MySqlCommand cmd = new MySqlCommand($"INSERT INTO game VALUES ( @GameKey, @Title, @PlatformID, @Genre, @Description, @BrandID )",
+                    con);
+                cmd.Parameters.AddWithValue("@GameKey", game.key);
+                cmd.Parameters.AddWithValue("@Title", game.title);
+                cmd.Parameters.AddWithValue("@PlatformID", game.platform.id);
+                cmd.Parameters.AddWithValue("@Genre", game.GetGenresSQL());
+                cmd.Parameters.AddWithValue("@Description", game.description);
+                cmd.Parameters.AddWithValue("@BrandID", game.company.id);
+                try
+                {
+                    int rows = cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("SQL error...");
+                    return false;
+                }
+                con.Close();
+                return true;
+            }
+        }
+
+        public bool DeleteGame()
+        {
+            using (MySqlConnection con = new MySqlConnection("server=localhost;" +
+                                                                "user=root;" +
+                                                                "database=dam_m06;" +
+                                                                "port=3306;" +
+                                                                "password=1234"))
+            {
+                con.Open();
+                MySqlCommand cmd = new MySqlCommand($"DELETE FROM game WHERE GameKey like @GameKey",
+                    con);
+                cmd.Parameters.AddWithValue("@GameKey", this.key);
+                try
+                {
+                    int rows = cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("SQL error...");
+                    return false;
+                }
+                con.Close();
+                return true;
+            }
+        }
+
+        public bool UpdateGame()
+        {
+            using (MySqlConnection con = new MySqlConnection("server=localhost;" +
+                                                                "user=root;" +
+                                                                "database=dam_m06;" +
+                                                                "port=3306;" +
+                                                                "password=1234"))
+            {
+                con.Open();
+                MySqlCommand cmd = new MySqlCommand($"UPDATE game SET Title = @Title, Platform = @PlatformID, Genre = @Genre, Description = @Description, BrandID = @BrandID" +
+                    $" WHERE GameKey like @GameKey", con);
+                cmd.Parameters.AddWithValue("@GameKey", this.key);
+                cmd.Parameters.AddWithValue("@Title", this.title);
+                cmd.Parameters.AddWithValue("@PlatformID", this.platform.id);
+                cmd.Parameters.AddWithValue("@Genre", this.GetGenresSQL());
+                cmd.Parameters.AddWithValue("@Description", this.description);
+                cmd.Parameters.AddWithValue("@BrandID", this.company.id);
+                try
+                {
+                    int rows = cmd.ExecuteNonQuery();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                    Console.WriteLine("SQL error...");
+                    return false;
+                }
+                con.Close();
+                return true;
+            }
         }
 
         public override string ToString()

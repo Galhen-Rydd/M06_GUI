@@ -52,13 +52,15 @@
             this.tbxPlatformID = new System.Windows.Forms.TextBox();
             this.tbxCompany = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.btnFilter = new System.Windows.Forms.Button();
+            this.lblResultQuery = new System.Windows.Forms.Label();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.checkedListBox1 = new System.Windows.Forms.CheckedListBox();
             this.checkedListBox2 = new System.Windows.Forms.CheckedListBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.tbxUser = new System.Windows.Forms.TextBox();
             this.tbxPass = new System.Windows.Forms.MaskedTextBox();
             this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
@@ -66,8 +68,8 @@
             this.btnLogIn = new System.Windows.Forms.Button();
             this.btnLogOut = new System.Windows.Forms.Button();
             this.lblLog = new System.Windows.Forms.Label();
-            this.btnFilter = new System.Windows.Forms.Button();
-            this.lblResultQuery = new System.Windows.Forms.Label();
+            this.btnClearValue = new System.Windows.Forms.Button();
+            this.lblTable = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.tableLayoutPanel2.SuspendLayout();
@@ -195,6 +197,8 @@
             this.tableLayoutPanel3.Controls.Add(this.label8, 1, 2);
             this.tableLayoutPanel3.Controls.Add(this.btnFilter, 2, 3);
             this.tableLayoutPanel3.Controls.Add(this.lblResultQuery, 5, 3);
+            this.tableLayoutPanel3.Controls.Add(this.btnClearValue, 3, 3);
+            this.tableLayoutPanel3.Controls.Add(this.lblTable, 4, 3);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(223, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
@@ -205,7 +209,6 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 35F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(876, 167);
             this.tableLayoutPanel3.TabIndex = 2;
-            this.tableLayoutPanel3.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel3_Paint);
             // 
             // label1
             // 
@@ -270,7 +273,7 @@
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(144, 25);
             this.label6.TabIndex = 5;
-            this.label6.Text = "BrandID";
+            this.label6.Text = "Company ID";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // tbxKey
@@ -331,7 +334,6 @@
             this.label7.TabIndex = 12;
             this.label7.Text = "Platform ID";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label7.Click += new System.EventHandler(this.label7_Click);
             // 
             // tbxPlatformID
             // 
@@ -360,6 +362,28 @@
             this.label8.Text = "Company Name";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // btnFilter
+            // 
+            this.btnFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnFilter.Location = new System.Drawing.Point(294, 111);
+            this.btnFilter.Name = "btnFilter";
+            this.btnFilter.Size = new System.Drawing.Size(139, 53);
+            this.btnFilter.TabIndex = 16;
+            this.btnFilter.Text = "Search (Key or ID)";
+            this.btnFilter.UseVisualStyleBackColor = true;
+            this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
+            // 
+            // lblResultQuery
+            // 
+            this.lblResultQuery.AutoSize = true;
+            this.lblResultQuery.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblResultQuery.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblResultQuery.Location = new System.Drawing.Point(729, 108);
+            this.lblResultQuery.Name = "lblResultQuery";
+            this.lblResultQuery.Size = new System.Drawing.Size(144, 59);
+            this.lblResultQuery.TabIndex = 17;
+            this.lblResultQuery.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // tableLayoutPanel4
             // 
             this.tableLayoutPanel4.ColumnCount = 1;
@@ -376,7 +400,6 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel4.Size = new System.Drawing.Size(214, 690);
             this.tableLayoutPanel4.TabIndex = 3;
-            this.tableLayoutPanel4.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel4_Paint);
             // 
             // checkedListBox1
             // 
@@ -420,7 +443,6 @@
             this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33F));
             this.tableLayoutPanel5.Size = new System.Drawing.Size(208, 224);
             this.tableLayoutPanel5.TabIndex = 2;
-            this.tableLayoutPanel5.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel5_Paint);
             // 
             // tableLayoutPanel6
             // 
@@ -440,18 +462,6 @@
             this.tableLayoutPanel6.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.tableLayoutPanel6.Size = new System.Drawing.Size(202, 144);
             this.tableLayoutPanel6.TabIndex = 0;
-            this.tableLayoutPanel6.Paint += new System.Windows.Forms.PaintEventHandler(this.tableLayoutPanel6_Paint);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label9.Location = new System.Drawing.Point(3, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(196, 28);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "User";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
             // 
             // label10
             // 
@@ -462,6 +472,16 @@
             this.label10.Size = new System.Drawing.Size(196, 28);
             this.label10.TabIndex = 1;
             this.label10.Text = "Password";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label9.Location = new System.Drawing.Point(3, 0);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(196, 28);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "User";
             // 
             // tbxUser
             // 
@@ -508,7 +528,7 @@
             this.tableLayoutPanel8.Name = "tableLayoutPanel8";
             this.tableLayoutPanel8.RowCount = 1;
             this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel8.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
             this.tableLayoutPanel8.Size = new System.Drawing.Size(196, 28);
             this.tableLayoutPanel8.TabIndex = 0;
             // 
@@ -537,7 +557,7 @@
             // lblLog
             // 
             this.lblLog.AutoSize = true;
-            this.lblLog.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.lblLog.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.lblLog.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblLog.Location = new System.Drawing.Point(3, 34);
             this.lblLog.Name = "lblLog";
@@ -545,26 +565,26 @@
             this.lblLog.TabIndex = 1;
             this.lblLog.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // btnFilter
+            // btnClearValue
             // 
-            this.btnFilter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.btnFilter.Location = new System.Drawing.Point(294, 111);
-            this.btnFilter.Name = "btnFilter";
-            this.btnFilter.Size = new System.Drawing.Size(139, 53);
-            this.btnFilter.TabIndex = 16;
-            this.btnFilter.Text = "Search (Key or ID)";
-            this.btnFilter.UseVisualStyleBackColor = true;
-            this.btnFilter.Click += new System.EventHandler(this.btnFilter_Click);
+            this.btnClearValue.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnClearValue.Location = new System.Drawing.Point(439, 111);
+            this.btnClearValue.Name = "btnClearValue";
+            this.btnClearValue.Size = new System.Drawing.Size(139, 53);
+            this.btnClearValue.TabIndex = 18;
+            this.btnClearValue.Text = "Clear Values";
+            this.btnClearValue.UseVisualStyleBackColor = true;
             // 
-            // lblResultQuery
+            // lblTable
             // 
-            this.lblResultQuery.AutoSize = true;
-            this.lblResultQuery.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblResultQuery.Location = new System.Drawing.Point(729, 108);
-            this.lblResultQuery.Name = "lblResultQuery";
-            this.lblResultQuery.Size = new System.Drawing.Size(144, 59);
-            this.lblResultQuery.TabIndex = 17;
-            this.lblResultQuery.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblTable.AllowDrop = true;
+            this.lblTable.AutoSize = true;
+            this.lblTable.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblTable.Location = new System.Drawing.Point(584, 108);
+            this.lblTable.Name = "lblTable";
+            this.lblTable.Size = new System.Drawing.Size(139, 59);
+            this.lblTable.TabIndex = 19;
+            this.lblTable.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // Form1
             // 
@@ -633,6 +653,8 @@
         private System.Windows.Forms.Label lblLog;
         private System.Windows.Forms.Button btnFilter;
         private System.Windows.Forms.Label lblResultQuery;
+        private System.Windows.Forms.Button btnClearValue;
+        private System.Windows.Forms.Label lblTable;
     }
 }
 

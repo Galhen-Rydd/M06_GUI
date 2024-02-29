@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using MySqlConnector;
+using MySqlX.XDevAPI.Relational;
 
 namespace ProjectGUI
 {
@@ -38,6 +39,7 @@ namespace ProjectGUI
             btnSendData.Enabled = false;
             btnLogOut.Enabled = false;
             PopulateGenreColumn();
+            lblTable.Text = "Table: Games";
         }
 
         private void PopulateGenreColumn()
@@ -139,12 +141,7 @@ namespace ProjectGUI
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void btnGames_Click(object sender, EventArgs e)
+        private void UpdateGames()
         {
             using (MySqlConnection con = new MySqlConnection("server=localhost;" +
                                                                 "user=root;" +
@@ -187,13 +184,17 @@ namespace ProjectGUI
                 cmd.Dispose();
                 con.Close();
                 dataGridView1.DataSource = ListOfGames;
-                dataGridView1.Columns.Add("Genre", "Genre");
+                if (!dataGridView1.Columns.Contains("Genre"))
+                {
+                    dataGridView1.Columns.Add("Genre", "Genre");
+                }
                 //dataGridView1.Columns["key"].Visible = false;
                 PopulateGenreColumn();
             }
+            lblTable.Text = "Table: Games";
         }
 
-        private void btnPlatforms_Click(object sender, EventArgs e)
+        private void UpdatePlatforms()
         {
             using (MySqlConnection con = new MySqlConnection("server=localhost;" +
                                                                 "user=root;" +
@@ -219,9 +220,10 @@ namespace ProjectGUI
                 cmd.Dispose();
                 con.Close();
             }
+            lblTable.Text = "Table: Platforms";
         }
 
-        private void btnCompany_Click(object sender, EventArgs e)
+        private void UpdateCompanies()
         {
             using (MySqlConnection con = new MySqlConnection("server=localhost;" +
                                                                 "user=root;" +
@@ -239,7 +241,7 @@ namespace ProjectGUI
                 }
                 companies = ListOfCompanies.Values.ToList();
                 dataGridView1.DataSource = companies;
-                if(dataGridView1.Columns.Contains("Genre"))
+                if (dataGridView1.Columns.Contains("Genre"))
                 {
                     dataGridView1.Columns.Remove("Genre");
                 }
@@ -247,16 +249,22 @@ namespace ProjectGUI
                 cmd.Dispose();
                 con.Close();
             }
+            lblTable.Text = "Table: Companies";
         }
 
-        private void tableLayoutPanel3_Paint(object sender, PaintEventArgs e)
+        private void btnGames_Click(object sender, EventArgs e)
         {
-
+            UpdateGames();
         }
 
-        private void tableLayoutPanel4_Paint(object sender, PaintEventArgs e)
+        private void btnPlatforms_Click(object sender, EventArgs e)
         {
+            UpdatePlatforms();
+        }
 
+        private void btnCompany_Click(object sender, EventArgs e)
+        {
+            UpdateCompanies();
         }
 
         private void checkedListBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -268,6 +276,7 @@ namespace ProjectGUI
                 if(index != i)
                 {
                     checkedListBox1.SetItemCheckState(i, CheckState.Unchecked);
+                    checkedListBox1.SetItemCheckState(index, CheckState.Checked);
                 }
             }
         }
@@ -281,6 +290,7 @@ namespace ProjectGUI
                 if (index != i)
                 {
                     checkedListBox2.SetItemCheckState(i, CheckState.Unchecked);
+                    checkedListBox2.SetItemCheckState(index, CheckState.Checked);
                 }
             }
         }
@@ -290,72 +300,180 @@ namespace ProjectGUI
             string mysqlquery = "";
             string table;
             string action;
+            string identification;
+            string insertText = "";
             
-            switch (checkedListBox1.SelectedIndex)
-            {
-                case 0:
-                    table = "game";
-                    break;
-                case 1:
-                    table = "platform";
-                    break;
-                case 2:
-                    table = "company";
-                    break;
-                default:
-                    return;
-            }
             switch (checkedListBox2.SelectedIndex)
             {
                 case 0:
-                    action = "insert into";
-                    mysqlquery = action + " " + table + " values ()";
+                    //action = "insert into";
+                    switch (checkedListBox1.SelectedIndex)
+                    {
+                        case 0:
+                            List<Genre> gen = GetGenresFromInput();
+                            try
+                            {
+                                Game g1 = new Game(tbxKey.Text, tbxTitle.Text, ListOfPlatforms[Int32.Parse(tbxPlatformID.Text)], 
+                                    gen, ListOfCompanies[Int32.Parse(tbxCompanyID.Text)], tbxDescription.Text);
+                                if (Game.InsertGame(g1))
+                                {
+                                    lblResultQuery.Text = "Game Inserted";
+                                    UpdateGames();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Insert Game";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Insert Game"; }
+                            
+                            break;
+                        case 1:
+                            try
+                            {
+                                Platform p1 = new Platform(0, tbxPlatform.Text, Int32.Parse(tbxCompanyID.Text));
+                                if (Platform.InsertPlatform(p1))
+                                {
+                                    lblResultQuery.Text = "Platform Inserted";
+                                    UpdatePlatforms();
+                                    }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Insert the Platform";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Insert the Platform"; }
+                            break;
+                        case 2:
+                            try
+                            {
+                                Company c1 = new Company(0, tbxCompany.Text);
+                                if (Company.InsertCompany(c1))
+                                {
+                                    lblResultQuery.Text = "Company Inserted";
+                                    UpdateCompanies();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Insert the Company";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Insert the Company"; }
+                            break;
+                        default:
+                            return;
+                    }
                     break;
                 case 1:
-                    action = "delete from";
-                    mysqlquery = action + " " + table + " where ";
+                    //action = "delete from";
+                    switch (checkedListBox1.SelectedIndex)
+                    {
+                        case 0:
+                            List<Genre> gen = GetGenresFromInput();
+                            try
+                            {
+                                Game g1 = new Game(tbxKey.Text, tbxTitle.Text, ListOfPlatforms[Int32.Parse(tbxPlatformID.Text)],
+                                gen, ListOfCompanies[Int32.Parse(tbxCompanyID.Text)], tbxDescription.Text);
+                                if (g1.DeleteGame())
+                                {
+                                    lblResultQuery.Text = "Game with key " + g1.key + " deleted";
+                                    UpdateGames();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Delete Game";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Delete Game"; }                            
+                            break;
+                        case 1:
+                            try
+                            {
+                                Platform p1 = new Platform(Int32.Parse(tbxPlatformID.Text), tbxPlatform.Text, Int32.Parse(tbxCompanyID.Text));
+                                if (p1.DeletePlatform())
+                                {
+                                    lblResultQuery.Text = "Platform with ID " + p1.id + " deleted";
+                                    UpdatePlatforms();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Delete Platform";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Delete Platform"; }
+                            break;
+                        case 2:
+                            try
+                            {
+                                Company c1 = new Company(Int32.Parse(tbxCompanyID.Text), tbxCompany.Text);
+                                if (c1.DeleteCompany())
+                                {
+                                    lblResultQuery.Text = "Company with ID " + c1.id + " deleted";
+                                    UpdateCompanies();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Delete Company";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Delete Company"; }
+                            break;
+                        default:
+                            return;
+                    }
                     break;
                 case 2:
-                    action = "update";
-                    mysqlquery = action + " " + table + " set "; 
+                    //action = "update";
+                    switch (checkedListBox1.SelectedIndex)
+                    {
+                        case 0:
+                            List<Genre> gen = new List<Genre>();
+                            try
+                            {
+                                Game g1 = new Game(tbxKey.Text, tbxTitle.Text, ListOfPlatforms[Int32.Parse(tbxPlatformID.Text)],
+                                gen, ListOfCompanies[Int32.Parse(tbxCompanyID.Text)], tbxDescription.Text);
+                                if (g1.UpdateGame())
+                                {
+                                    lblResultQuery.Text = "Game with key " + g1.key + " updated";
+                                    UpdateGames();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Update Game";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Update Game"; }
+                            break;
+                        case 1:
+                            try
+                            {
+                                Platform p1 = new Platform(Int32.Parse(tbxPlatformID.Text), tbxPlatform.Text, Int32.Parse(tbxCompanyID.Text));
+                                if (p1.UpdatePlatform())
+                                {
+                                    lblResultQuery.Text = "Platform with ID " + p1.id + " updated";
+                                    UpdatePlatforms();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Update Platform";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Update Platform"; }
+                            break;
+                        case 2:
+                            try
+                            {
+                                Company c1 = new Company(Int32.Parse(tbxCompanyID.Text), tbxCompany.Text);
+                                if (c1.UpdateCompany())
+                                {
+                                    lblResultQuery.Text = "Company with ID " + c1.id + " updated";
+                                    UpdateCompanies();
+                                }
+                                else
+                                {
+                                    lblResultQuery.Text = "Failed to Update Company";
+                                }
+                            } catch { lblResultQuery.Text = "Failed to Update Company"; }
+                            break;
+                        default:
+                            return;
+                    }
                     break;
                 default:
                     return;
             }
-            using (MySqlConnection con = new MySqlConnection("server=localhost;" +
-                                                                "user=root;" +
-                                                                "database=dam_m06;" +
-                                                                "port=3306;" +
-                                                                "password=1234"))
-            {
-                con.Open();
-                MySqlCommand cmd = new MySqlCommand(mysqlquery, con);
-                try
-                {
-                    cmd.ExecuteNonQuery();
-                }
-                catch (Exception ex) 
-                {
-                    Console.WriteLine(ex.ToString());
-                    Console.WriteLine("SQL error...");
-                }
-                con.Close();
-            }
-        }
-
-        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
-        {
-
-        }
-
-        private void label9_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel6_Paint(object sender, PaintEventArgs e)
-        {
-
         }
 
         private void btnLogIn_Click(object sender, EventArgs e)
@@ -387,19 +505,111 @@ namespace ProjectGUI
             }
         }
 
-        private void label7_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label11_Click(object sender, EventArgs e)
-        {
-
-        }
-
         private void btnFilter_Click(object sender, EventArgs e)
         {
+            int id;
+            switch (checkedListBox1.SelectedIndex)
+            {
+                case 0:
+                    List<Game> searchGames = new List<Game>();
+                    foreach(var g in ListOfGames)
+                    {
+                        if (g.key.ToLower().Contains(tbxKey.Text.ToLower()))
+                        {
+                            Console.WriteLine(tbxKey.Text);
+                            searchGames.Add(g);
+                        }
+                    }
+                    dataGridView1.DataSource = searchGames;
+                    if (!dataGridView1.Columns.Contains("Genre"))
+                    {
+                        dataGridView1.Columns.Add("Genre", "Genre");
+                    }
+                    PopulateGenreColumn();
+                    lblResultQuery.Text = "Displaying found games";
+                    if(searchGames.Count == 1)
+                    {
+                        Game game = searchGames[0];
+                        tbxKey.Text = game.key;
+                        tbxTitle.Text = game.title;
+                        tbxPlatform.Text = game.platform.name;
+                        tbxGenres.Text = game.GetGenres();
+                        tbxDescription.Text = game.description;
+                        tbxCompanyID.Text = game.company.id.ToString();
+                        tbxPlatformID.Text = game.platform.id.ToString();
+                        tbxCompany.Text = game.company.name;
+                    }
+                    break;
+                case 1:
+                    List<Platform> searchPlatform = new List<Platform>();
+                    
+                    Int32.TryParse(tbxPlatformID.Text, out id);
+                    if (ListOfPlatforms.ContainsKey(id))
+                    {
+                        searchPlatform.Add(ListOfPlatforms[id]);
+                    }
+                    dataGridView1.DataSource = searchPlatform;
+                    if (dataGridView1.Columns.Contains("Genre"))
+                    {
+                        dataGridView1.Columns.Remove("Genre");
+                    }
+                    if(searchPlatform.Count == 1)
+                    {
+                        Platform platform = searchPlatform[0];
+                        tbxPlatformID.Text = platform.id.ToString();
+                        tbxPlatform.Text = platform.name;
+                        tbxCompanyID.Text = platform.brandId.ToString();
+                        tbxCompany.Text = ListOfCompanies[platform.brandId].name;
+                    }
+                    break;
+                case 2:
+                    List<Company> searchCompany = new List<Company>();
+                    Int32.TryParse(tbxCompanyID.Text, out id);
+                    if (ListOfCompanies.ContainsKey(id))
+                    {
+                        searchCompany.Add(ListOfCompanies[id]);
+                    }
+                    dataGridView1.DataSource = searchCompany;
+                    if (dataGridView1.Columns.Contains("Genre"))
+                    {
+                        dataGridView1.Columns.Remove("Genre");
+                    }
+                    if(searchCompany.Count == 1)
+                    {
+                        Company company = searchCompany[0];
+                        tbxCompanyID.Text = company.id.ToString();
+                        tbxCompany.Text = company.name;
+                    }
+                    break;
+                default:
+                    lblResultQuery.Text = "Select Game, Platform or Company";
+                    return;
+            }
+        }
 
+        private List<Genre> GetGenresFromInput()
+        {
+            List<Genre> gen = new List<Genre>();
+            string[] arrayGenres = tbxGenres.Text.Split(',');
+            foreach (var s in arrayGenres)
+            {
+                try
+                {
+                    if (s == "")
+                    {
+                        continue;
+                    }
+                    string genreString = s.Trim();
+                    Genre g = (Genre)Enum.Parse(typeof(Genre), genreString);
+                    gen.Add(g);
+                }
+                catch
+                {
+                    //Console.WriteLine(s);
+                    Console.WriteLine("Unrecognized Genre...");
+                }
+            }
+            return gen;
         }
     }
 }
